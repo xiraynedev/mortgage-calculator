@@ -9,6 +9,10 @@ public class MortgageCalculator {
     private int principal;
     private float annualInterestRate;
     private byte loanPeriod;
+    private final byte PERCENT = 100;
+    private final byte MONTHS_IN_YEAR = 12;
+    private float monthlyInterestRate;
+    private short numberOfPayments;
     private double mortgage;
 
     public MortgageCalculator() {
@@ -16,19 +20,7 @@ public class MortgageCalculator {
         getAnnualInterestRate();
         getLoanPeriod();
         calculateMortgage();
-        formatAndPrintMortgage(mortgage);
-    }
-
-    private void getPrincipal() {
-        principal = (int) (getUserInput("Principal ($1K - $1M): ", 1000, 1_000_000));
-    }
-
-    private void getAnnualInterestRate() {
-        annualInterestRate = (float) (getUserInput("Annual Interest Rate (1.0 - 30.0): ", 0, 30));
-    }
-
-    private void getLoanPeriod() {
-        loanPeriod = (byte) (getUserInput("Loan Period (Years) 1 - 30: ", 0, 30));
+        printMortgageAndPaymentSchedule();
     }
 
     private double getUserInput(String prompt, double min, double max) {
@@ -43,18 +35,55 @@ public class MortgageCalculator {
         return inputValue;
     }
 
+    private void getPrincipal() {
+        principal = (int) (getUserInput("Principal ($1K - $1M): ", 1000, 1_000_000));
+    }
+
+    private void getAnnualInterestRate() {
+        annualInterestRate = (float) (getUserInput("Annual Interest Rate (1.0 - 30.0): ", 0, 30));
+    }
+
+    private void getLoanPeriod() {
+        loanPeriod = (byte) (getUserInput("Loan Period (Years) 1 - 30: ", 0, 30));
+    }
+
     private void calculateMortgage() {
-        final byte PERCENT = 100;
-        final byte MONTHS_IN_YEAR = 12;
-        float monthlyInterestRate = (annualInterestRate / PERCENT) / MONTHS_IN_YEAR;
-        short numberOfPayments = (short) (loanPeriod * MONTHS_IN_YEAR);
+        monthlyInterestRate = (annualInterestRate / PERCENT) / MONTHS_IN_YEAR;
+        numberOfPayments = (short) (loanPeriod * MONTHS_IN_YEAR);
 
         mortgage = principal
                 * (monthlyInterestRate * (Math.pow(1 + monthlyInterestRate, numberOfPayments))
                 / (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1));
     }
 
-    private void formatAndPrintMortgage(double mortgage) {
-        System.out.println(NumberFormat.getCurrencyInstance(Locale.US).format(mortgage));
+    private double calculateBalance(short numberOfPaymentsMade) {
+        // B = L[(1 + c)**n-(1 + c)**p]/[(1 + c)**n - 1]
+
+        return principal * (Math.pow(1 + monthlyInterestRate, numberOfPayments)
+                - Math.pow(1 + monthlyInterestRate, numberOfPaymentsMade))
+                / (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1);
+    }
+
+    private void printMortgageAndPaymentSchedule() {
+        printMortgage();
+        printPaymentSchedule();
+    }
+
+    private void printMortgage() {
+        String formattedMortgage = NumberFormat.getCurrencyInstance(Locale.US).format(mortgage);
+        System.out.println();
+        System.out.println("MORTGAGE");
+        System.out.println("--------");
+        System.out.println("Monthly Payments: " + formattedMortgage);
+    }
+
+    private void printPaymentSchedule() {
+        System.out.println();
+        System.out.println("PAYMENT SCHEDULE");
+        System.out.println("----------------");
+        for (short month = 1; month <= numberOfPayments; month++) {
+            double balance = calculateBalance(month);
+            System.out.println(NumberFormat.getCurrencyInstance(Locale.US).format(balance));
+        }
     }
 }
