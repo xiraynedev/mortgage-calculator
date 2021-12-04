@@ -11,59 +11,47 @@ public class MortgageCalculator {
     private byte loanPeriod;
     private double mortgage;
 
-    public  MortgageCalculator() {
-        principal = getPrincipal();
-        annualInterestRate = getAnnualInterestRate();
-        loanPeriod = getLoanPeriod();
-        mortgage = calculateMortgage();
+    public MortgageCalculator() {
+        getPrincipal();
+        getAnnualInterestRate();
+        getLoanPeriod();
+        calculateMortgage();
         formatAndPrintMortgage(mortgage);
     }
 
-    private int getPrincipal() {
-        while (true) {
-            System.out.print("Principal ($1K - $1M): ");
-            principal = scanner.nextInt();
-            if (principal >= 1000 && principal <= 1_000_000) {
-                break;
-            }
-            System.out.println("Enter a number between $1,000 and $1,000,000");
-        }
-        return principal;
+    private void getPrincipal() {
+        principal = (int) (getUserInput("Principal ($1K - $1M): ", 1000, 1_000_000));
     }
 
-    private float getAnnualInterestRate() {
-        while (true) {
-            System.out.print("Annual Interest Rate (1.0 - 30.0): ");
-            annualInterestRate = scanner.nextFloat();
-            if (annualInterestRate > 0 && annualInterestRate <= 30) {
-                break;
-            }
-            System.out.println("Enter a number between 1 and 30");
-        }
-        return annualInterestRate;
+    private void getAnnualInterestRate() {
+        annualInterestRate = (float) (getUserInput("Annual Interest Rate (1.0 - 30.0): ", 0, 30));
     }
 
-    private byte getLoanPeriod() {
-        while (true) {
-            System.out.print("Loan Period (Years) 1 - 30: ");
-            loanPeriod = scanner.nextByte();
-            if (loanPeriod > 0 && loanPeriod <= 30) {
-                break;
-            }
-            System.out.println("Enter a number between 1 and 30");
-        }
-        return loanPeriod;
+    private void getLoanPeriod() {
+        loanPeriod = (byte) (getUserInput("Loan Period (Years) 1 - 30: ", 0, 30));
     }
 
-    private double calculateMortgage() {
+    private double getUserInput(String prompt, double min, double max) {
+        double inputValue;
+        while (true) {
+            System.out.print(prompt);
+            inputValue = scanner.nextDouble();
+            if (inputValue >= min && inputValue <= max)
+                break;
+            System.out.println("Enter a number between " + min + " and " + max);
+        }
+        return inputValue;
+    }
+
+    private void calculateMortgage() {
         final byte PERCENT = 100;
         final byte MONTHS_IN_YEAR = 12;
         float monthlyInterestRate = (annualInterestRate / PERCENT) / MONTHS_IN_YEAR;
         short numberOfPayments = (short) (loanPeriod * MONTHS_IN_YEAR);
 
-        return principal
+        mortgage = principal
                 * (monthlyInterestRate * (Math.pow(1 + monthlyInterestRate, numberOfPayments))
-                / (Math.pow(1 + monthlyInterestRate, numberOfPayments) -1));
+                / (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1));
     }
 
     private void formatAndPrintMortgage(double mortgage) {
