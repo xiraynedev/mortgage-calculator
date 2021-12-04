@@ -9,8 +9,6 @@ public class MortgageCalculator {
     private int principal;
     private float annualInterestRate;
     private byte loanPeriod;
-    private final byte PERCENT = 100;
-    private final byte MONTHS_IN_YEAR = 12;
     private float monthlyInterestRate;
     private short numberOfPayments;
     private double mortgage;
@@ -23,31 +21,21 @@ public class MortgageCalculator {
         printMortgageAndPaymentSchedule();
     }
 
-    private double getUserInput(String prompt, double min, double max) {
-        double inputValue;
-        while (true) {
-            System.out.print(prompt);
-            inputValue = scanner.nextDouble();
-            if (inputValue >= min && inputValue <= max)
-                break;
-            System.out.println("Enter a number between " + min + " and " + max);
-        }
-        return inputValue;
-    }
-
     private void getPrincipal() {
-        principal = (int) (getUserInput("Principal ($1K - $1M): ", 1000, 1_000_000));
+        principal = (int) (Console.getUserInput("Principal ($1K - $1M): ", 1000, 1_000_000));
     }
 
     private void getAnnualInterestRate() {
-        annualInterestRate = (float) (getUserInput("Annual Interest Rate (1.0 - 30.0): ", 0, 30));
+        annualInterestRate = (float) (Console.getUserInput("Annual Interest Rate (1.0 - 30.0): ", 0, 30));
     }
 
     private void getLoanPeriod() {
-        loanPeriod = (byte) (getUserInput("Loan Period (Years) 1 - 30: ", 0, 30));
+        loanPeriod = (byte) (Console.getUserInput("Loan Period (Years) 1 - 30: ", 0, 30));
     }
 
     private void calculateMortgage() {
+        byte PERCENT = 100;
+        byte MONTHS_IN_YEAR = 12;
         monthlyInterestRate = (annualInterestRate / PERCENT) / MONTHS_IN_YEAR;
         numberOfPayments = (short) (loanPeriod * MONTHS_IN_YEAR);
 
