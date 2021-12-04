@@ -2,10 +2,8 @@ package com.xiraynedev;
 
 import java.text.NumberFormat;
 import java.util.Locale;
-import java.util.Scanner;
 
 public class MortgageCalculator {
-    Scanner scanner = new Scanner(System.in);
     private int principal;
     private float annualInterestRate;
     private byte loanPeriod;
@@ -18,7 +16,8 @@ public class MortgageCalculator {
         getAnnualInterestRate();
         getLoanPeriod();
         calculateMortgage();
-        printMortgageAndPaymentSchedule();
+        printMortgage();
+        printPaymentSchedule();
     }
 
     private void getPrincipal() {
@@ -45,16 +44,9 @@ public class MortgageCalculator {
     }
 
     private double calculateBalance(short numberOfPaymentsMade) {
-        // B = L[(1 + c)**n-(1 + c)**p]/[(1 + c)**n - 1]
-
         return principal * (Math.pow(1 + monthlyInterestRate, numberOfPayments)
                 - Math.pow(1 + monthlyInterestRate, numberOfPaymentsMade))
                 / (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1);
-    }
-
-    private void printMortgageAndPaymentSchedule() {
-        printMortgage();
-        printPaymentSchedule();
     }
 
     private void printMortgage() {
