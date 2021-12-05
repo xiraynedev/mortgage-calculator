@@ -1,7 +1,6 @@
 package com.xiraynedev;
 
-import java.text.NumberFormat;
-import java.util.Locale;
+import java.util.ArrayList;
 
 public class MortgageCalculator {
     private int principal;
@@ -10,14 +9,16 @@ public class MortgageCalculator {
     private float monthlyInterestRate;
     private short numberOfPayments;
     private double mortgage;
+    private ArrayList balance = new ArrayList();
 
     public MortgageCalculator() {
         getPrincipal();
         getAnnualInterestRate();
         getLoanPeriod();
         calculateMortgage();
-        printMortgage();
-        printPaymentSchedule();
+        calculateBalance();
+        MortgageReport.printMortgage(mortgage);
+        MortgageReport.printPaymentSchedule(balance);
     }
 
     private void getPrincipal() {
@@ -43,27 +44,11 @@ public class MortgageCalculator {
                 / (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1));
     }
 
-    private double calculateBalance(short numberOfPaymentsMade) {
-        return principal * (Math.pow(1 + monthlyInterestRate, numberOfPayments)
-                - Math.pow(1 + monthlyInterestRate, numberOfPaymentsMade))
-                / (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1);
-    }
-
-    private void printMortgage() {
-        String formattedMortgage = NumberFormat.getCurrencyInstance(Locale.US).format(mortgage);
-        System.out.println();
-        System.out.println("MORTGAGE");
-        System.out.println("--------");
-        System.out.println("Monthly Payments: " + formattedMortgage);
-    }
-
-    private void printPaymentSchedule() {
-        System.out.println();
-        System.out.println("PAYMENT SCHEDULE");
-        System.out.println("----------------");
+    private void calculateBalance() {
         for (short month = 1; month <= numberOfPayments; month++) {
-            double balance = calculateBalance(month);
-            System.out.println(NumberFormat.getCurrencyInstance(Locale.US).format(balance));
+            balance.add(principal * (Math.pow(1 + monthlyInterestRate, numberOfPayments)
+                            - Math.pow(1 + monthlyInterestRate, month))
+                            / (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1));
         }
     }
 }
